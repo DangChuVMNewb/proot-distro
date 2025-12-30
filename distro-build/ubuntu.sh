@@ -12,7 +12,7 @@ bootstrap_distribution() {
 			--architectures=${arch} \
 			--variant=apt \
 			--components="main,universe,multiverse" \
-			--include="locales,passwd,nano,curl,wget,apt-utils" \
+			--include="locales,passwd,nano,curl,wget,apt-utils,dialog" \
 			--format=directory \
 			"${dist_version}" \
 			"${WORKDIR}/ubuntu-${dist_version}-$(translate_arch "$arch")"
@@ -54,6 +54,7 @@ write_plugin() {
 	distro_setup() {
 	${TAB}sed -i -E 's/#[[:space:]]?(en_US.UTF-8[[:space:]]+UTF-8)/\1/g' ./etc/locale.gen
 	${TAB}run_proot_cmd DEBIAN_FRONTEND=noninteractive dpkg-reconfigure locales
+	${TAB}run_proot_cmd cp /etc/skel/.bashrc .
 
 	}
 	EOF
