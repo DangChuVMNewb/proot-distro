@@ -12,7 +12,7 @@ bootstrap_distribution() {
 			--architectures=${arch} \
 			--variant=apt \
 			--components="main,universe,multiverse" \
-			--include="locales,passwd,software-properties-common" \
+			--include="locales,passwd,nano,curl,wget,apt-utilw" \
 			--format=directory \
 			"${dist_version}" \
 			"${WORKDIR}/ubuntu-${dist_version}-$(translate_arch "$arch")"
@@ -52,18 +52,9 @@ write_plugin() {
 	TARBALL_SHA256['x86_64']="$(sha256sum "${ROOTFS_DIR}/ubuntu-${dist_version}-x86_64-pd-${CURRENT_VERSION}.tar.xz" | awk '{ print $1}')"
 
 	distro_setup() {
-	${TAB}# Configure en_US.UTF-8 locale.
 	${TAB}sed -i -E 's/#[[:space:]]?(en_US.UTF-8[[:space:]]+UTF-8)/\1/g' ./etc/locale.gen
 	${TAB}run_proot_cmd DEBIAN_FRONTEND=noninteractive dpkg-reconfigure locales
 
-	${TAB}# Configure Mozilla PPA.
-	${TAB}echo "Configuring PPA repository for Firefox and Thunderbird..."
-	${TAB}run_proot_cmd add-apt-repository --yes --no-update ppa:mozillateam/ppa || true
-	${TAB}cat <<- CONFIG_EOF > ./etc/apt/preferences.d/pin-mozilla-ppa
-	${TAB}Package: *
-	${TAB}Pin: release o=LP-PPA-mozillateam
-	${TAB}Pin-Priority: 9999
-	${TAB}CONFIG_EOF
 	}
 	EOF
 }
